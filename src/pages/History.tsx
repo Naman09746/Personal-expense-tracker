@@ -1,10 +1,16 @@
 import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import type { Entry } from '../types';
+import type { Entry, Category } from '../types';
 import { CATEGORY_LABELS } from '../types';
-import { getCategoryIcon } from '../utils/iconMap';
+import { getCategoryIcon, FallbackIcon } from '../utils/iconMap';
 import { getEntriesByMonth, formatCurrency, formatDate, deleteEntry } from '../services/storage';
+
+// Safe category label lookup with fallback
+const getSafeCategoryLabel = (category: Category | string | undefined): string => {
+    if (!category) return 'Unknown';
+    return CATEGORY_LABELS[category as Category] || String(category);
+};
 
 interface HistoryProps {
     onEditEntry: (entry: Entry) => void;
@@ -114,7 +120,8 @@ export default function History({ onEditEntry, refreshKey, onRefresh }: HistoryP
 
                                 {/* Entries for this date */}
                                 {dayEntries.map(entry => {
-                                    const Icon = getCategoryIcon(entry.category);
+                                    // Safe icon retrieval with explicit fallback
+                                    const Icon = getCategoryIcon(entry.category) || FallbackIcon;
                                     const isIncome = entry.type === 'income';
 
                                     return (
@@ -185,7 +192,7 @@ export default function History({ onEditEntry, refreshKey, onRefresh }: HistoryP
                                                 </div>
                                                 <div className="entry-details">
                                                     <div className="entry-category">
-                                                        {entry.type === 'income' ? 'Income' : CATEGORY_LABELS[entry.category]}
+                                                        {entry.type === 'income' ? 'Income' : getSafeCategoryLabel(entry.category)}
                                                     </div>
                                                     {entry.note && <div className="entry-note">{entry.note}</div>}
                                                     {entry.type === 'expense' && (

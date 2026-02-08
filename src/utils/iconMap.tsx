@@ -34,9 +34,13 @@ import {
     Trophy,
     TrendingUp,
     TrendingDown,
+    CircleDollarSign,
     type LucideIcon
 } from 'lucide-react';
 import type { Category, CategoryGroup } from '../types';
+
+// Fallback icon for unknown categories
+export const FallbackIcon = CircleDollarSign;
 
 // Category Icons
 export const CategoryIconMap: Record<Category, LucideIcon> = {
@@ -87,9 +91,9 @@ export const ActionIcons = {
     TrendingDown
 };
 
-// Helper function to get icon component by category
+// Helper function to get icon component by category (with fallback for unknown categories)
 export const getCategoryIcon = (category: Category): LucideIcon => {
-    return CategoryIconMap[category];
+    return CategoryIconMap[category] || FallbackIcon;
 };
 
 // Helper function to get icon component by group
